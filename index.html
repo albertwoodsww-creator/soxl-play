@@ -3,140 +3,68 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SOXL Pro Daily Guide</title>
+<title>SOXL MA Helper</title>
 <style>
-  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;margin:0;background:#f3f5f7;color:#111}
-  .wrap{max-width:760px;margin:auto;padding:18px}
-  .card{background:#fff;border-radius:18px;padding:18px;margin:14px 0;box-shadow:0 8px 24px rgba(0,0,0,.08)}
-  h1{font-size:26px;margin:4px 0}
-  h2{font-size:19px;margin:4px 0 12px}
-  .muted{color:#666;font-size:14px}
-  label{display:block;font-weight:700;margin-top:13px}
-  input,select{width:100%;box-sizing:border-box;padding:12px;margin-top:6px;border:1px solid #cfd4dc;border-radius:11px;font-size:16px;background:#fff}
-  button{width:100%;border:0;border-radius:13px;padding:15px;margin-top:18px;font-size:18px;font-weight:800;background:#1565d8;color:white}
-  .signal{border-radius:16px;padding:20px;margin-top:16px;color:#111}
-  .buy{background:#dff5e6;border:2px solid #2eae55}
-  .hold{background:#fff4cf;border:2px solid #f4b400}
-  .sell{background:#fde1df;border:2px solid #db4437}
-  .danger{background:#f8d7da;border:3px solid #b00020}
-  .big{font-size:34px;font-weight:900}
-  .score{font-size:18px;font-weight:800;margin-top:4px}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .pill{display:inline-block;padding:7px 10px;border-radius:999px;background:#eef2f7;margin:4px 3px;font-weight:700;font-size:13px}
-  .line{height:1px;background:#e5e7eb;margin:14px 0}
-  .small{font-size:13px;color:#666;line-height:1.45}
-  ul{padding-left:20px}
-  li{margin:6px 0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:#f3f5f7;margin:0;color:#111}
+.wrap{max-width:760px;margin:auto;padding:18px}.card{background:#fff;border-radius:18px;padding:18px;margin:14px 0;box-shadow:0 8px 24px rgba(0,0,0,.08)}
+h1{font-size:28px;margin:4px 0}h2{font-size:21px;margin:4px 0 12px}.muted{color:#666;line-height:1.45}
+label{display:block;font-weight:800;margin-top:14px}
+input,select{width:100%;box-sizing:border-box;padding:13px;margin-top:6px;border:1px solid #cfd4dc;border-radius:12px;font-size:18px;background:white}
+button{width:100%;border:0;border-radius:14px;padding:16px;margin-top:18px;font-size:20px;font-weight:900;background:#1565d8;color:white}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.signal{border-radius:16px;padding:20px;margin-top:16px}
+.buy{background:#dff5e6;border:2px solid #2eae55}.hold{background:#fff4cf;border:2px solid #f4b400}.sell{background:#fde1df;border:2px solid #db4437}.danger{background:#f8d7da;border:3px solid #b00020}
+.big{font-size:34px;font-weight:900}.score{font-size:19px;font-weight:800}.line{height:1px;background:#e5e7eb;margin:14px 0}.small{font-size:14px;color:#666;line-height:1.45}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="card">
-    <h1>SOXL Pro Daily Guide</h1>
-    <div class="muted">Rule-based discipline tool for SOXL. Built for daily iPhone use.</div>
-  </div>
-
-  <div class="card">
-    <h2>1) Today's Inputs</h2>
-    <div class="grid">
-      <div><label>SOXL Price</label><input id="price" type="number" step="0.01" placeholder="Example: 42.50"></div>
-      <div><label>Your Avg Cost</label><input id="cost" type="number" step="0.01" placeholder="Optional"></div>
-    </div>
-    <div class="grid">
-      <div><label>Daily RSI</label><input id="rsi" type="number" step="0.1" placeholder="Example: 34"></div>
-      <div><label>Volume vs Normal</label><select id="volume"><option value="normal">Normal</option><option value="high">High volume</option><option value="low">Low volume</option></select></div>
-    </div>
-    <label>SOXL vs MA20</label><select id="ma20"><option value="above">Above MA20</option><option value="below">Below MA20</option></select>
-    <label>SOXL vs MA50</label><select id="ma50"><option value="above">Above MA50</option><option value="below">Below MA50</option></select>
-    <div class="grid">
-      <div><label>NVDA Today</label><select id="nvda"><option value="green">Green / strong</option><option value="flat">Flat / mixed</option><option value="red">Red / weak</option></select></div>
-      <div><label>AMD Today</label><select id="amd"><option value="green">Green / strong</option><option value="flat">Flat / mixed</option><option value="red">Red / weak</option></select></div>
-    </div>
-    <label>SOXX / Semiconductor Sector Today</label><select id="soxx"><option value="green">Green / strong</option><option value="flat">Flat / mixed</option><option value="red">Red / weak</option></select>
-    <label>Market Mood: QQQ / Nasdaq</label><select id="qqq"><option value="green">Green / risk-on</option><option value="flat">Flat / mixed</option><option value="red">Red / risk-off</option></select>
-    <label>News Risk Today</label><select id="news"><option value="normal">Normal</option><option value="earnings">Major earnings / Fed / CPI today</option><option value="bad">Bad semiconductor / AI news</option></select>
-    <button onclick="runModel()">Check Today's Signal</button>
-    <button onclick="saveInputs()" style="background:#3c4043">Save My Inputs</button>
-    <div id="result"></div>
-  </div>
-
-  <div class="card">
-    <h2>2) Daily Trading Rules</h2>
-    <span class="pill">Never all-in</span><span class="pill">SOXL is 3x leveraged</span><span class="pill">Protect capital first</span>
-    <div class="line"></div>
-    <ul>
-      <li><b>Strong Buy:</b> RSI below 35 + above MA20 + NVDA/AMD/SOXX strong.</li>
-      <li><b>Hold:</b> mixed signal or unclear market.</li>
-      <li><b>Take Profit:</b> RSI above 70 or profit already 20%+.</li>
-      <li><b>Danger Sell:</b> price below MA20 and MA50, leaders red, or loss more than 10%.</li>
-    </ul>
-    <div class="small">This app gives a rule-based signal, not a guarantee. Leveraged ETFs can lose value quickly.</div>
-  </div>
-
-  <div class="card">
-    <h2>3) Position Size Guide</h2>
-    <ul>
-      <li><b>Strong Buy:</b> use 30%-40% of planned SOXL money.</li>
-      <li><b>Small Buy:</b> use 10%-20% only.</li>
-      <li><b>Hold:</b> no new money.</li>
-      <li><b>Reduce:</b> sell 25%-50%.</li>
-      <li><b>Danger:</b> protect capital; sell most or wait outside.</li>
-    </ul>
-  </div>
+<div class="card"><h1>SOXL Daily Signal Helper</h1><div class="muted">This version automatically decides Above/Below MA20 and MA50 after you enter the MA numbers.</div></div>
+<div class="card">
+<h2>1) Enter Today’s Numbers</h2>
+<div class="grid">
+<div><label>SOXL Price</label><input id="price" type="number" step="0.01" placeholder="119.50"></div>
+<div><label>Your Avg Cost</label><input id="cost" type="number" step="0.01" placeholder="109"></div>
 </div>
-
+<div class="grid">
+<div><label>Daily RSI</label><input id="rsi" type="number" step="0.1" placeholder="36.5"></div>
+<div><label>Volume</label><select id="volume"><option value="normal">Normal</option><option value="high">High</option><option value="low">Low</option></select></div>
+</div>
+<div class="grid">
+<div><label>MA20 Value</label><input id="ma20" type="number" step="0.01" placeholder="Example: 115"></div>
+<div><label>MA50 Value</label><input id="ma50" type="number" step="0.01" placeholder="Example: 101"></div>
+</div>
+<div class="grid">
+<div><label>NVDA Today</label><select id="nvda"><option value="green">Green / strong</option><option value="flat">Flat / mixed</option><option value="red">Red / weak</option></select></div>
+<div><label>AMD Today</label><select id="amd"><option value="green">Green / strong</option><option value="flat">Flat / mixed</option><option value="red">Red / weak</option></select></div>
+</div>
+<label>SOXX Today</label><select id="soxx"><option value="green">Green / strong</option><option value="flat">Flat / mixed</option><option value="red">Red / weak</option></select>
+<label>QQQ / Nasdaq Today</label><select id="qqq"><option value="green">Green / risk-on</option><option value="flat">Flat / mixed</option><option value="red">Red / risk-off</option></select>
+<button onclick="signal()">Check Signal</button>
+<div id="result"></div>
+</div>
+<div class="card"><h2>How to get MA20 / MA50</h2><div class="small">TradingView → SOXL chart → Indicators → Moving Average. Add two lines: length 20 and length 50. Enter those two values here. This app will decide Above/Below automatically.</div></div>
+</div>
 <script>
-function val(id){return document.getElementById(id).value}
-function num(id){return parseFloat(document.getElementById(id).value)}
-function saveInputs(){
-  const ids=["price","cost","rsi","volume","ma20","ma50","nvda","amd","soxx","qqq","news"];
-  ids.forEach(id=>localStorage.setItem(id,val(id)));
-  alert("Saved. Next time the app will remember your inputs.");
-}
-function loadInputs(){
-  const ids=["price","cost","rsi","volume","ma20","ma50","nvda","amd","soxx","qqq","news"];
-  ids.forEach(id=>{ if(localStorage.getItem(id)!==null) document.getElementById(id).value=localStorage.getItem(id); });
-}
-window.onload=loadInputs;
-function runModel(){
-  const price=num("price"), cost=num("cost"), rsi=num("rsi");
-  const volume=val("volume"), ma20=val("ma20"), ma50=val("ma50");
-  const nvda=val("nvda"), amd=val("amd"), soxx=val("soxx"), qqq=val("qqq"), news=val("news");
-  const box=document.getElementById("result");
-  if(isNaN(rsi)){ box.innerHTML='<div class="signal hold"><div class="big">Need RSI</div>Enter today RSI first.</div>'; return; }
-  let score=0, notes=[], risks=[];
-  if(rsi<28){score+=4; notes.push("RSI is extremely oversold. Possible rebound zone.");}
-  else if(rsi<35){score+=3; notes.push("RSI is oversold. Buy setup may be forming.");}
-  else if(rsi<=50){score+=1; notes.push("RSI is neutral and recovering.");}
-  else if(rsi<=65){notes.push("RSI is normal but not cheap.");}
-  else if(rsi<=70){score-=1; risks.push("RSI is getting high. Do not chase aggressively.");}
-  else if(rsi<=80){score-=4; risks.push("RSI is overbought. Take profit zone.");}
-  else {score-=6; risks.push("RSI is extremely overbought. Strong sell/protect zone.");}
-  if(ma20==="above"){score+=2; notes.push("Above MA20: short-term trend supports holding/buying dips.");} else {score-=3; risks.push("Below MA20: short-term trend is weak.");}
-  if(ma50==="above"){score+=2; notes.push("Above MA50: medium trend is healthy.");} else {score-=3; risks.push("Below MA50: medium trend is weak.");}
-  [nvda,amd,soxx,qqq].forEach(x=>{if(x==="green")score+=1; if(x==="red")score-=1;});
-  if(nvda==="green" && amd==="green" && soxx==="green") notes.push("NVDA, AMD, and SOXX all confirm strength.");
-  if(nvda==="red" && amd==="red") risks.push("NVDA and AMD are both red. Avoid aggressive buying.");
-  if(volume==="high" && (nvda==="green" || soxx==="green")){score+=1; notes.push("High volume supports the move.");}
-  if(volume==="low"){score-=1; risks.push("Low volume makes the signal weaker.");}
-  if(news==="earnings"){score-=1; risks.push("Major news day: use smaller size.");}
-  if(news==="bad"){score-=4; risks.push("Bad AI/semiconductor news: danger risk.");}
-  if(!isNaN(price) && !isNaN(cost) && cost>0){
-    let pnl=((price-cost)/cost)*100;
-    notes.push("Current P/L vs your cost: " + pnl.toFixed(1) + "%.");
-    if(pnl<=-10){score-=6; risks.push("Loss is worse than -10%: risk-control rule triggered.");}
-    else if(pnl>=30){score-=4; risks.push("Profit is 30%+: take strong partial profit.");}
-    else if(pnl>=20){score-=2; risks.push("Profit is 20%+: consider taking some profit.");}
-  }
-  let action, cls, size;
-  if(score>=7){action="STRONG BUY / ADD"; cls="buy"; size="Suggested size: 30%-40% of planned SOXL money.";}
-  else if(score>=4){action="SMALL BUY / ADD"; cls="buy"; size="Suggested size: 10%-20% only.";}
-  else if(score>=0){action="HOLD / WAIT"; cls="hold"; size="No aggressive new buy. Wait for clearer signal.";}
-  else if(score>=-5){action="REDUCE / TAKE PROFIT"; cls="sell"; size="Consider selling 25%-50% if you already hold.";}
-  else {action="DANGER: SELL / AVOID"; cls="danger"; size="Protect capital. Avoid new buying.";}
-  box.innerHTML = '<div class="signal '+cls+'"><div class="big">'+action+'</div><div class="score">Model Score: '+score+'</div><p><b>'+size+'</b></p><div class="line"></div><b>Positive signs:</b><br>'+(notes.length?notes.map(x=>"• "+x).join("<br>"):"• None")+'<br><br><b>Risk warnings:</b><br>'+(risks.length?risks.map(x=>"• "+x).join("<br>"):"• No major risk warning from the model.")+'</div>';
-  const ids=["price","cost","rsi","volume","ma20","ma50","nvda","amd","soxx","qqq","news"];
-  ids.forEach(id=>localStorage.setItem(id,val(id)));
+function g(id){return document.getElementById(id).value}
+function n(id){return parseFloat(g(id))}
+function save(){["price","cost","rsi","volume","ma20","ma50","nvda","amd","soxx","qqq"].forEach(id=>localStorage.setItem(id,g(id)))}
+function load(){["price","cost","rsi","volume","ma20","ma50","nvda","amd","soxx","qqq"].forEach(id=>{let v=localStorage.getItem(id); if(v!==null)document.getElementById(id).value=v})}
+window.onload=load
+function signal(){
+let price=n("price"), cost=n("cost"), rsi=n("rsi"), ma20=n("ma20"), ma50=n("ma50");
+if(isNaN(price)||isNaN(rsi)||isNaN(ma20)||isNaN(ma50)){alert("Enter SOXL price, RSI, MA20, and MA50 first.");return}
+let score=0,notes=[],risks=[];
+if(rsi<28){score+=4;notes.push("RSI extremely oversold: "+rsi)}else if(rsi<35){score+=3;notes.push("RSI oversold: "+rsi)}else if(rsi<=50){score+=1;notes.push("RSI neutral/recovering: "+rsi)}else if(rsi<=65){notes.push("RSI normal: "+rsi)}else if(rsi<=70){score-=1;risks.push("RSI getting high: "+rsi)}else if(rsi<=80){score-=4;risks.push("RSI overbought: "+rsi)}else{score-=6;risks.push("RSI extremely overbought: "+rsi)}
+if(price>ma20){score+=2;notes.push("SOXL price is above MA20: bullish short-term trend.")}else{score-=3;risks.push("SOXL price is below MA20: short-term weakness.")}
+if(price>ma50){score+=2;notes.push("SOXL price is above MA50: bullish medium trend.")}else{score-=3;risks.push("SOXL price is below MA50: medium-trend risk.")}
+["nvda","amd","soxx","qqq"].forEach(id=>{let v=g(id);if(v==="green")score+=1;if(v==="red")score-=1})
+if(g("nvda")==="green"&&g("amd")==="green"&&g("soxx")==="green")notes.push("NVDA, AMD, and SOXX are all green.")
+if(g("nvda")==="red"&&g("amd")==="red")risks.push("NVDA and AMD are both red.")
+if(g("volume")==="high"){score+=1;notes.push("High volume supports the move.")} if(g("volume")==="low"){score-=1;risks.push("Low volume weakens the signal.")}
+if(!isNaN(cost)&&cost>0){let pnl=(price-cost)/cost*100;notes.push("Your P/L vs average cost: "+pnl.toFixed(1)+"%."); if(pnl<=-10){score-=6;risks.push("Loss worse than -10%: risk-control sell rule.")}else if(pnl>=30){score-=4;risks.push("Profit over 30%: strong profit-taking zone.")}else if(pnl>=20){score-=2;risks.push("Profit over 20%: consider partial profit.")}}
+let action,cl,size;if(score>=7){action="STRONG BUY / ADD";cl="buy";size="30%-40% of planned SOXL money."}else if(score>=4){action="SMALL BUY / ADD";cl="buy";size="10%-20% only."}else if(score>=0){action="HOLD / WAIT";cl="hold";size="No aggressive buy."}else if(score>=-5){action="REDUCE / TAKE PROFIT";cl="sell";size="Consider selling 25%-50%."}else{action="DANGER: SELL / AVOID";cl="danger";size="Protect capital."}
+document.getElementById("result").innerHTML='<div class="signal '+cl+'"><div class="big">'+action+'</div><div class="score">Score: '+score+'</div><p><b>'+size+'</b></p><div class="line"></div><b>Auto MA check:</b><br>• Price: $'+price.toFixed(2)+'<br>• MA20: $'+ma20.toFixed(2)+' → '+(price>ma20?'Above':'Below')+'<br>• MA50: $'+ma50.toFixed(2)+' → '+(price>ma50?'Above':'Below')+'<br><br><b>Positive:</b><br>'+(notes.length?notes.map(x=>"• "+x).join("<br>"):"• None")+'<br><br><b>Risks:</b><br>'+(risks.length?risks.map(x=>"• "+x).join("<br>"):"• No major warning.")+'</div>';
+save();
 }
 </script>
 </body>
