@@ -3,140 +3,246 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SOXL Pro Daily Guide</title>
+<title>SOXL Auto Pro Signal</title>
 <style>
-  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;margin:0;background:#f3f5f7;color:#111}
-  .wrap{max-width:760px;margin:auto;padding:18px}
-  .card{background:#fff;border-radius:18px;padding:18px;margin:14px 0;box-shadow:0 8px 24px rgba(0,0,0,.08)}
-  h1{font-size:26px;margin:4px 0}
-  h2{font-size:19px;margin:4px 0 12px}
-  .muted{color:#666;font-size:14px}
-  label{display:block;font-weight:700;margin-top:13px}
-  input,select{width:100%;box-sizing:border-box;padding:12px;margin-top:6px;border:1px solid #cfd4dc;border-radius:11px;font-size:16px;background:#fff}
-  button{width:100%;border:0;border-radius:13px;padding:15px;margin-top:18px;font-size:18px;font-weight:800;background:#1565d8;color:white}
-  .signal{border-radius:16px;padding:20px;margin-top:16px;color:#111}
-  .buy{background:#dff5e6;border:2px solid #2eae55}
-  .hold{background:#fff4cf;border:2px solid #f4b400}
-  .sell{background:#fde1df;border:2px solid #db4437}
-  .danger{background:#f8d7da;border:3px solid #b00020}
-  .big{font-size:34px;font-weight:900}
-  .score{font-size:18px;font-weight:800;margin-top:4px}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .pill{display:inline-block;padding:7px 10px;border-radius:999px;background:#eef2f7;margin:4px 3px;font-weight:700;font-size:13px}
-  .line{height:1px;background:#e5e7eb;margin:14px 0}
-  .small{font-size:13px;color:#666;line-height:1.45}
-  ul{padding-left:20px}
-  li{margin:6px 0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;margin:0;background:#f3f5f7;color:#111}
+.wrap{max-width:760px;margin:auto;padding:18px}
+.card{background:#fff;border-radius:18px;padding:18px;margin:14px 0;box-shadow:0 8px 24px rgba(0,0,0,.08)}
+h1{font-size:26px;margin:4px 0} h2{font-size:19px;margin:4px 0 12px}
+.muted{color:#666;font-size:14px;line-height:1.45}
+label{display:block;font-weight:700;margin-top:13px}
+input,select{width:100%;box-sizing:border-box;padding:12px;margin-top:6px;border:1px solid #cfd4dc;border-radius:11px;font-size:16px;background:#fff}
+button{width:100%;border:0;border-radius:13px;padding:15px;margin-top:18px;font-size:18px;font-weight:800;background:#1565d8;color:white}
+button.gray{background:#3c4043}
+.signal{border-radius:16px;padding:20px;margin-top:16px;color:#111}
+.buy{background:#dff5e6;border:2px solid #2eae55}
+.hold{background:#fff4cf;border:2px solid #f4b400}
+.sell{background:#fde1df;border:2px solid #db4437}
+.danger{background:#f8d7da;border:3px solid #b00020}
+.big{font-size:32px;font-weight:900}
+.score{font-size:18px;font-weight:800;margin-top:4px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pill{display:inline-block;padding:7px 10px;border-radius:999px;background:#eef2f7;margin:4px 3px;font-weight:700;font-size:13px}
+.line{height:1px;background:#e5e7eb;margin:14px 0}
+.small{font-size:13px;color:#666;line-height:1.45}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px}
+td,th{border-bottom:1px solid #eee;padding:8px;text-align:left}
+.good{color:#12803a;font-weight:800}.bad{color:#b00020;font-weight:800}.flat{color:#666;font-weight:800}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="card">
-    <h1>SOXL Pro Daily Guide</h1>
-    <div class="muted">Rule-based discipline tool for SOXL. Built for daily iPhone use.</div>
+    <h1>SOXL Auto Pro Signal</h1>
+    <div class="muted">Fully automatic daily SOXL signal using live market data. Enter your free API key once.</div>
   </div>
 
   <div class="card">
-    <h2>1) Today's Inputs</h2>
-    <div class="grid">
-      <div><label>SOXL Price</label><input id="price" type="number" step="0.01" placeholder="Example: 42.50"></div>
-      <div><label>Your Avg Cost</label><input id="cost" type="number" step="0.01" placeholder="Optional"></div>
+    <h2>1) Setup</h2>
+    <label>Finnhub API Key</label>
+    <input id="apiKey" type="password" placeholder="Paste your free Finnhub API key here">
+    <label>Your SOXL Average Cost</label>
+    <input id="avgCost" type="number" step="0.01" placeholder="Optional, example: 113">
+    <button onclick="saveSettings()" class="gray">Save Settings</button>
+    <button onclick="runAuto()">Get Today's Auto Signal</button>
+    <div class="small">
+      Get a free key at Finnhub.io. Your key is saved only inside your phone browser, not sent to me.
     </div>
-    <div class="grid">
-      <div><label>Daily RSI</label><input id="rsi" type="number" step="0.1" placeholder="Example: 34"></div>
-      <div><label>Volume vs Normal</label><select id="volume"><option value="normal">Normal</option><option value="high">High volume</option><option value="low">Low volume</option></select></div>
-    </div>
-    <label>SOXL vs MA20</label><select id="ma20"><option value="above">Above MA20</option><option value="below">Below MA20</option></select>
-    <label>SOXL vs MA50</label><select id="ma50"><option value="above">Above MA50</option><option value="below">Below MA50</option></select>
-    <div class="grid">
-      <div><label>NVDA Today</label><select id="nvda"><option value="green">Green / strong</option><option value="flat">Flat / mixed</option><option value="red">Red / weak</option></select></div>
-      <div><label>AMD Today</label><select id="amd"><option value="green">Green / strong</option><option value="flat">Flat / mixed</option><option value="red">Red / weak</option></select></div>
-    </div>
-    <label>SOXX / Semiconductor Sector Today</label><select id="soxx"><option value="green">Green / strong</option><option value="flat">Flat / mixed</option><option value="red">Red / weak</option></select>
-    <label>Market Mood: QQQ / Nasdaq</label><select id="qqq"><option value="green">Green / risk-on</option><option value="flat">Flat / mixed</option><option value="red">Red / risk-off</option></select>
-    <label>News Risk Today</label><select id="news"><option value="normal">Normal</option><option value="earnings">Major earnings / Fed / CPI today</option><option value="bad">Bad semiconductor / AI news</option></select>
-    <button onclick="runModel()">Check Today's Signal</button>
-    <button onclick="saveInputs()" style="background:#3c4043">Save My Inputs</button>
+    <div id="status" class="muted"></div>
     <div id="result"></div>
   </div>
 
   <div class="card">
-    <h2>2) Daily Trading Rules</h2>
-    <span class="pill">Never all-in</span><span class="pill">SOXL is 3x leveraged</span><span class="pill">Protect capital first</span>
+    <h2>2) What the App Checks Automatically</h2>
+    <span class="pill">SOXL RSI</span>
+    <span class="pill">MA20 / MA50</span>
+    <span class="pill">NVDA</span>
+    <span class="pill">AMD</span>
+    <span class="pill">SOXX</span>
+    <span class="pill">QQQ</span>
+    <span class="pill">Volume</span>
     <div class="line"></div>
-    <ul>
-      <li><b>Strong Buy:</b> RSI below 35 + above MA20 + NVDA/AMD/SOXX strong.</li>
-      <li><b>Hold:</b> mixed signal or unclear market.</li>
-      <li><b>Take Profit:</b> RSI above 70 or profit already 20%+.</li>
-      <li><b>Danger Sell:</b> price below MA20 and MA50, leaders red, or loss more than 10%.</li>
-    </ul>
-    <div class="small">This app gives a rule-based signal, not a guarantee. Leveraged ETFs can lose value quickly.</div>
+    <div class="small">
+      Rule-based model only. SOXL is a 3x leveraged ETF and can lose money quickly. This is a discipline tool, not guaranteed financial advice.
+    </div>
   </div>
 
   <div class="card">
-    <h2>3) Position Size Guide</h2>
+    <h2>3) Daily Rule Reminder</h2>
     <ul>
-      <li><b>Strong Buy:</b> use 30%-40% of planned SOXL money.</li>
-      <li><b>Small Buy:</b> use 10%-20% only.</li>
-      <li><b>Hold:</b> no new money.</li>
-      <li><b>Reduce:</b> sell 25%-50%.</li>
-      <li><b>Danger:</b> protect capital; sell most or wait outside.</li>
+      <li><b>Strong Buy:</b> oversold RSI + above MA20/MA50 + leaders green.</li>
+      <li><b>Hold:</b> mixed signal.</li>
+      <li><b>Take Profit:</b> RSI high or profit over 20%.</li>
+      <li><b>Danger:</b> below MA20/MA50 + leaders red or loss over 10%.</li>
     </ul>
   </div>
 </div>
 
 <script>
-function val(id){return document.getElementById(id).value}
-function num(id){return parseFloat(document.getElementById(id).value)}
-function saveInputs(){
-  const ids=["price","cost","rsi","volume","ma20","ma50","nvda","amd","soxx","qqq","news"];
-  ids.forEach(id=>localStorage.setItem(id,val(id)));
-  alert("Saved. Next time the app will remember your inputs.");
+const symbols = ["SOXL","NVDA","AMD","SOXX","QQQ"];
+
+function saveSettings(){
+  localStorage.setItem("finnhubKey", document.getElementById("apiKey").value.trim());
+  localStorage.setItem("avgCost", document.getElementById("avgCost").value.trim());
+  alert("Saved.");
 }
-function loadInputs(){
-  const ids=["price","cost","rsi","volume","ma20","ma50","nvda","amd","soxx","qqq","news"];
-  ids.forEach(id=>{ if(localStorage.getItem(id)!==null) document.getElementById(id).value=localStorage.getItem(id); });
+function loadSettings(){
+  document.getElementById("apiKey").value = localStorage.getItem("finnhubKey") || "";
+  document.getElementById("avgCost").value = localStorage.getItem("avgCost") || "";
 }
-window.onload=loadInputs;
-function runModel(){
-  const price=num("price"), cost=num("cost"), rsi=num("rsi");
-  const volume=val("volume"), ma20=val("ma20"), ma50=val("ma50");
-  const nvda=val("nvda"), amd=val("amd"), soxx=val("soxx"), qqq=val("qqq"), news=val("news");
-  const box=document.getElementById("result");
-  if(isNaN(rsi)){ box.innerHTML='<div class="signal hold"><div class="big">Need RSI</div>Enter today RSI first.</div>'; return; }
-  let score=0, notes=[], risks=[];
-  if(rsi<28){score+=4; notes.push("RSI is extremely oversold. Possible rebound zone.");}
-  else if(rsi<35){score+=3; notes.push("RSI is oversold. Buy setup may be forming.");}
-  else if(rsi<=50){score+=1; notes.push("RSI is neutral and recovering.");}
-  else if(rsi<=65){notes.push("RSI is normal but not cheap.");}
-  else if(rsi<=70){score-=1; risks.push("RSI is getting high. Do not chase aggressively.");}
-  else if(rsi<=80){score-=4; risks.push("RSI is overbought. Take profit zone.");}
-  else {score-=6; risks.push("RSI is extremely overbought. Strong sell/protect zone.");}
-  if(ma20==="above"){score+=2; notes.push("Above MA20: short-term trend supports holding/buying dips.");} else {score-=3; risks.push("Below MA20: short-term trend is weak.");}
-  if(ma50==="above"){score+=2; notes.push("Above MA50: medium trend is healthy.");} else {score-=3; risks.push("Below MA50: medium trend is weak.");}
-  [nvda,amd,soxx,qqq].forEach(x=>{if(x==="green")score+=1; if(x==="red")score-=1;});
-  if(nvda==="green" && amd==="green" && soxx==="green") notes.push("NVDA, AMD, and SOXX all confirm strength.");
-  if(nvda==="red" && amd==="red") risks.push("NVDA and AMD are both red. Avoid aggressive buying.");
-  if(volume==="high" && (nvda==="green" || soxx==="green")){score+=1; notes.push("High volume supports the move.");}
-  if(volume==="low"){score-=1; risks.push("Low volume makes the signal weaker.");}
-  if(news==="earnings"){score-=1; risks.push("Major news day: use smaller size.");}
-  if(news==="bad"){score-=4; risks.push("Bad AI/semiconductor news: danger risk.");}
-  if(!isNaN(price) && !isNaN(cost) && cost>0){
-    let pnl=((price-cost)/cost)*100;
-    notes.push("Current P/L vs your cost: " + pnl.toFixed(1) + "%.");
-    if(pnl<=-10){score-=6; risks.push("Loss is worse than -10%: risk-control rule triggered.");}
-    else if(pnl>=30){score-=4; risks.push("Profit is 30%+: take strong partial profit.");}
-    else if(pnl>=20){score-=2; risks.push("Profit is 20%+: consider taking some profit.");}
+window.onload=loadSettings;
+
+function setStatus(msg){document.getElementById("status").innerHTML="<br>"+msg;}
+
+async function fetchJSON(url){
+  const r = await fetch(url);
+  if(!r.ok) throw new Error("Network/API error");
+  const j = await r.json();
+  if(j.error) throw new Error(j.error);
+  return j;
+}
+
+function avg(arr){return arr.reduce((a,b)=>a+b,0)/arr.length;}
+function sma(arr, n){
+  if(arr.length<n) return null;
+  return avg(arr.slice(arr.length-n));
+}
+function rsi(closes, period=14){
+  if(closes.length < period+1) return null;
+  let gains=0, losses=0;
+  for(let i=closes.length-period;i<closes.length;i++){
+    let diff=closes[i]-closes[i-1];
+    if(diff>=0) gains+=diff; else losses-=diff;
   }
-  let action, cls, size;
-  if(score>=7){action="STRONG BUY / ADD"; cls="buy"; size="Suggested size: 30%-40% of planned SOXL money.";}
-  else if(score>=4){action="SMALL BUY / ADD"; cls="buy"; size="Suggested size: 10%-20% only.";}
-  else if(score>=0){action="HOLD / WAIT"; cls="hold"; size="No aggressive new buy. Wait for clearer signal.";}
-  else if(score>=-5){action="REDUCE / TAKE PROFIT"; cls="sell"; size="Consider selling 25%-50% if you already hold.";}
-  else {action="DANGER: SELL / AVOID"; cls="danger"; size="Protect capital. Avoid new buying.";}
-  box.innerHTML = '<div class="signal '+cls+'"><div class="big">'+action+'</div><div class="score">Model Score: '+score+'</div><p><b>'+size+'</b></p><div class="line"></div><b>Positive signs:</b><br>'+(notes.length?notes.map(x=>"• "+x).join("<br>"):"• None")+'<br><br><b>Risk warnings:</b><br>'+(risks.length?risks.map(x=>"• "+x).join("<br>"):"• No major risk warning from the model.")+'</div>';
-  const ids=["price","cost","rsi","volume","ma20","ma50","nvda","amd","soxx","qqq","news"];
-  ids.forEach(id=>localStorage.setItem(id,val(id)));
+  if(losses===0) return 100;
+  let rs=(gains/period)/(losses/period);
+  return 100-(100/(1+rs));
+}
+function pctChange(q){
+  if(!q || !q.pc || !q.c) return 0;
+  return ((q.c-q.pc)/q.pc)*100;
+}
+function trendWord(p){
+  if(p>0.35) return "green";
+  if(p<-0.35) return "red";
+  return "flat";
+}
+function clsWord(w){
+  if(w==="green") return '<span class="good">Green</span>';
+  if(w==="red") return '<span class="bad">Red</span>';
+  return '<span class="flat">Flat</span>';
+}
+
+async function getQuote(sym, key){
+  return await fetchJSON(`https://finnhub.io/api/v1/quote?symbol=${sym}&token=${key}`);
+}
+async function getCandles(sym, key){
+  const to = Math.floor(Date.now()/1000);
+  const from = to - 86400*140;
+  return await fetchJSON(`https://finnhub.io/api/v1/stock/candle?symbol=${sym}&resolution=D&from=${from}&to=${to}&token=${key}`);
+}
+
+async function runAuto(){
+  const key=document.getElementById("apiKey").value.trim();
+  const avgCost=parseFloat(document.getElementById("avgCost").value);
+  if(!key){alert("Please enter your Finnhub API key first."); return;}
+  saveSettings();
+  setStatus("Loading live market data...");
+  document.getElementById("result").innerHTML="";
+
+  try{
+    let quotes={}, soxlCandles;
+    for(const s of symbols){
+      setStatus("Loading "+s+"...");
+      quotes[s]=await getQuote(s,key);
+    }
+    setStatus("Calculating SOXL RSI / MA...");
+    soxlCandles=await getCandles("SOXL",key);
+
+    if(!soxlCandles.c || soxlCandles.s==="no_data") throw new Error("No SOXL candle data returned.");
+
+    const closes=soxlCandles.c;
+    const volumes=soxlCandles.v || [];
+    const price=quotes.SOXL.c || closes[closes.length-1];
+    const rsiVal=rsi(closes,14);
+    const ma20=sma(closes,20);
+    const ma50=sma(closes,50);
+    const vol20=volumes.length>=20 ? sma(volumes,20) : null;
+    const todayVol=volumes.length ? volumes[volumes.length-1] : null;
+
+    let score=0, notes=[], risks=[];
+
+    if(rsiVal<28){score+=4; notes.push("SOXL RSI is extremely oversold: "+rsiVal.toFixed(1));}
+    else if(rsiVal<35){score+=3; notes.push("SOXL RSI is oversold: "+rsiVal.toFixed(1));}
+    else if(rsiVal<=50){score+=1; notes.push("SOXL RSI is recovering/neutral: "+rsiVal.toFixed(1));}
+    else if(rsiVal<=65){notes.push("SOXL RSI is normal but not cheap: "+rsiVal.toFixed(1));}
+    else if(rsiVal<=70){score-=1; risks.push("SOXL RSI is getting high: "+rsiVal.toFixed(1));}
+    else if(rsiVal<=80){score-=4; risks.push("SOXL RSI is overbought: "+rsiVal.toFixed(1));}
+    else {score-=6; risks.push("SOXL RSI is extremely overbought: "+rsiVal.toFixed(1));}
+
+    if(price>ma20){score+=2; notes.push("SOXL is above MA20.");} else {score-=3; risks.push("SOXL is below MA20.");}
+    if(price>ma50){score+=2; notes.push("SOXL is above MA50.");} else {score-=3; risks.push("SOXL is below MA50.");}
+
+    const leaderRows=[];
+    for(const s of ["NVDA","AMD","SOXX","QQQ"]){
+      const p=pctChange(quotes[s]);
+      const tw=trendWord(p);
+      if(tw==="green") score+=1;
+      if(tw==="red") score-=1;
+      leaderRows.push({s,p,tw});
+    }
+    if(leaderRows.find(x=>x.s==="NVDA").tw==="green" && leaderRows.find(x=>x.s==="AMD").tw==="green" && leaderRows.find(x=>x.s==="SOXX").tw==="green"){
+      notes.push("NVDA, AMD, and SOXX are all green.");
+    }
+    if(leaderRows.find(x=>x.s==="NVDA").tw==="red" && leaderRows.find(x=>x.s==="AMD").tw==="red"){
+      risks.push("NVDA and AMD are both red.");
+    }
+
+    if(vol20 && todayVol){
+      if(todayVol > vol20*1.25){score+=1; notes.push("SOXL volume is higher than normal.");}
+      else if(todayVol < vol20*0.75){score-=1; risks.push("SOXL volume is lower than normal.");}
+    }
+
+    if(!isNaN(avgCost) && avgCost>0){
+      const pnl=((price-avgCost)/avgCost)*100;
+      notes.push("Your SOXL P/L vs avg cost: "+pnl.toFixed(1)+"%.");
+      if(pnl<=-10){score-=6; risks.push("Loss worse than -10%: risk-control rule triggered.");}
+      else if(pnl>=30){score-=4; risks.push("Profit over 30%: strong partial profit zone.");}
+      else if(pnl>=20){score-=2; risks.push("Profit over 20%: consider partial profit.");}
+    }
+
+    let action, cls, size;
+    if(score>=7){action="STRONG BUY / ADD"; cls="buy"; size="Suggested size: 30%-40% of planned SOXL money.";}
+    else if(score>=4){action="SMALL BUY / ADD"; cls="buy"; size="Suggested size: 10%-20% only.";}
+    else if(score>=0){action="HOLD / WAIT"; cls="hold"; size="No aggressive new buy. Wait for clearer signal.";}
+    else if(score>=-5){action="REDUCE / TAKE PROFIT"; cls="sell"; size="Consider selling 25%-50% if you already hold.";}
+    else {action="DANGER: SELL / AVOID"; cls="danger"; size="Protect capital. Avoid new buying.";}
+
+    let table=`<table><tr><th>Item</th><th>Value</th></tr>
+      <tr><td>SOXL Price</td><td>$${price.toFixed(2)}</td></tr>
+      <tr><td>SOXL RSI</td><td>${rsiVal.toFixed(1)}</td></tr>
+      <tr><td>MA20</td><td>$${ma20.toFixed(2)}</td></tr>
+      <tr><td>MA50</td><td>$${ma50.toFixed(2)}</td></tr>`;
+    for(const x of leaderRows){
+      table+=`<tr><td>${x.s}</td><td>${clsWord(x.tw)} (${x.p.toFixed(2)}%)</td></tr>`;
+    }
+    table+=`</table>`;
+
+    document.getElementById("result").innerHTML=`
+      <div class="signal ${cls}">
+        <div class="big">${action}</div>
+        <div class="score">Model Score: ${score}</div>
+        <p><b>${size}</b></p>
+        ${table}
+        <div class="line"></div>
+        <b>Positive signs:</b><br>${notes.length?notes.map(x=>"• "+x).join("<br>"):"• None"}
+        <br><br><b>Risk warnings:</b><br>${risks.length?risks.map(x=>"• "+x).join("<br>"):"• No major risk warning from the model."}
+      </div>`;
+    setStatus("Done. Data loaded successfully.");
+  }catch(e){
+    document.getElementById("result").innerHTML=`<div class="signal danger"><div class="big">Data Error</div><p>${e.message}</p><p>Please check your API key, internet connection, or try again later.</p></div>`;
+    setStatus("Could not finish.");
+  }
 }
 </script>
 </body>
