@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SOXL Daily Buy/Sell Guide</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: #f4f6f8;
+    color: #222;
+  }
+  .container {
+    max-width: 720px;
+    margin: auto;
+    background: white;
+    padding: 22px;
+    border-radius: 18px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  }
+  h1 {
+    font-size: 26px;
+    margin-bottom: 6px;
+  }
+  .subtitle {
+    color: #666;
+    margin-bottom: 20px;
+  }
+  label {
+    display: block;
+    margin-top: 14px;
+    font-weight: 600;
+  }
+  input, select {
+    width: 100%;
+    padding: 12px;
+    margin-top: 6px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    box-sizing: border-box;
+  }
+  button {
+    width: 100%;
+    margin-top: 22px;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 700;
+    background: #1a73e8;
+    color: white;
+    cursor: pointer;
+  }
+  .result {
+    margin-top: 24px;
+    padding: 20px;
+    border-radius: 14px;
+    font-size: 18px;
+    line-height: 1.45;
+  }
+  .buy { background: #e6f4ea; border: 2px solid #34a853; }
+  .hold { background: #fff7e0; border: 2px solid #fbbc04; }
+  .sell { background: #fdecea; border: 2px solid #ea4335; }
+  .score {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+  .small {
+    font-size: 14px;
+    color: #666;
+    margin-top: 18px;
+  }
+  .rules {
+    background: #f8f9fa;
+    padding: 14px;
+    border-radius: 12px;
+    margin-top: 18px;
+    font-size: 15px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>SOXL Daily Buy/Sell Guide</h1>
+  <div class="subtitle">Personal rule-based model for daily SOXL decisions</div>
+
+  <label>SOXL Current Price</label>
+  <input type="number" id="price" placeholder="Example: 42.50" step="0.01">
+
+  <label>Your Average Cost (optional)</label>
+  <input type="number" id="cost" placeholder="Example: 38.00" step="0.01">
+
+  <label>SOXL Daily RSI</label>
+  <input type="number" id="rsi" placeholder="Example: 34" step="0.1">
+
+  <label>Is SOXL above MA20?</label>
+  <select id="ma20">
+    <option value="yes">Yes, above MA20</option>
+    <option value="no">No, below MA20</option>
+  </select>
+
+  <label>NVDA Today</label>
+  <select id="nvda">
+    <option value="green">Green / strong</option>
+    <option value="flat">Flat / mixed</option>
+    <option value="red">Red / weak</option>
+  </select>
+
+  <label>AMD Today</label>
+  <select id="amd">
+    <option value="green">Green / strong</option>
+    <option value="flat">Flat / mixed</option>
+    <option value="red">Red / weak</option>
+  </select>
+
+  <label>SOXX or Semiconductor Index Trend</label>
+  <select id="soxx">
+    <option value="green">Green / strong</option>
+    <option value="flat">Flat / mixed</option>
+    <option value="red">Red / weak</option>
+  </select>
+
+  <button onclick="calculateSignal()">Check Today’s Signal</button>
+
+  <div id="result"></div>
+
+  <div class="rules">
+    <b>Simple rules:</b><br>
+    RSI under 35 = possible buy zone.<br>
+    RSI 35–60 = hold/add only if trend is strong.<br>
+    RSI over 70 = start taking profit.<br>
+    RSI over 80 = strong sell / protect profit.<br>
+    If SOXL drops 10% below your cost, reduce risk.
+  </div>
+
+  <div class="small">
+    This is not financial advice. SOXL is a 3× leveraged ETF and can lose money very fast. Use this as a discipline tool, not a guarantee.
+  </div>
+</div>
+
+<script>
+function calculateSignal() {
+  const price = parseFloat(document.getElementById('price').value);
+  const cost = parseFloat(document.getElementById('cost').value);
+  const rsi = parseFloat(document.getElementById('rsi').value);
+  const ma20 = document.getElementById('ma20').value;
+  const nvda = document.getElementById('nvda').value;
+  const amd = document.getElementById('amd').value;
+  const soxx = document.getElementById('soxx').value;
+
+  if (isNaN(rsi)) {
+    document.getElementById('result').innerHTML = '<div class="result hold">Please enter RSI first.</div>';
+    return;
+  }
+
+  let score = 0;
+  let notes = [];
+
+  if (rsi < 30) { score += 3; notes.push("RSI is very oversold: strong possible buy zone."); }
+  else if (rsi < 35) { score += 2; notes.push("RSI is oversold: possible buy zone."); }
+  else if (rsi <= 60) { score += 1; notes.push("RSI is neutral/healthy."); }
+  else if (rsi <= 70) { score -= 1; notes.push("RSI is getting high: be careful chasing."); }
+  else if (rsi <= 80) { score -= 3; notes.push("RSI is overbought: consider taking profit."); }
+  else { score -= 5; notes.push("RSI is extremely high: strong sell/protect profit zone."); }
+
+  if (ma20 === "yes") { score += 2; notes.push("SOXL is above MA20: trend is supportive."); }
+  else { score -= 2; notes.push("SOXL is below MA20: trend risk is higher."); }
+
+  [nvda, amd, soxx].forEach((x) => {
+    if (x === "green") score += 1;
+    if (x === "red") score -= 1;
+  });
+
+  if (nvda === "green" && amd === "green" && soxx === "green") {
+    notes.push("NVDA, AMD, and semiconductor trend are all strong.");
+  } else if (nvda === "red" && amd === "red") {
+    notes.push("NVDA and AMD are both weak: avoid aggressive buying.");
+  }
+
+  if (!isNaN(price) && !isNaN(cost) && cost > 0) {
+    const pnl = ((price - cost) / cost) * 100;
+    if (pnl <= -10) {
+      score -= 4;
+      notes.push("Price is more than 10% below your cost: risk-control sell/reduce rule is triggered.");
+    } else if (pnl >= 25) {
+      score -= 2;
+      notes.push("You have over 25% profit: consider taking partial profit.");
+    } else if (pnl >= 15) {
+      notes.push("You have over 15% profit: consider protecting some gain.");
+    }
+  }
+
+  let action = "";
+  let cls = "";
+  let size = "";
+
+  if (score >= 5) {
+    action = "BUY / ADD";
+    cls = "buy";
+    size = "Suggested size: 30%–40% of your planned SOXL money, not all-in.";
+  } else if (score >= 2) {
+    action = "SMALL BUY or HOLD";
+    cls = "buy";
+    size = "Suggested size: 10%–25% only.";
+  } else if (score >= -1) {
+    action = "HOLD / WAIT";
+    cls = "hold";
+    size = "Suggested action: wait for clearer signal.";
+  } else if (score >= -4) {
+    action = "REDUCE / TAKE PROFIT";
+    cls = "sell";
+    size = "Suggested action: sell 25%–50% if you already hold.";
+  } else {
+    action = "SELL / AVOID";
+    cls = "sell";
+    size = "Suggested action: protect capital. Do not chase.";
+  }
+
+  document.getElementById('result').innerHTML = `
+    <div class="result ${cls}">
+      <div class="score">${action}</div>
+      <b>Model score:</b> ${score}<br>
+      <b>${size}</b><br><br>
+      ${notes.map(n => "• " + n).join("<br>")}
+    </div>
+  `;
+}
+</script>
+</body>
+</html>
