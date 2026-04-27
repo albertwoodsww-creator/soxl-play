@@ -1,205 +1,191 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SOXL Daily Signal App</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SOXL Daily Signal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { font-family: Arial, sans-serif; background: #f6f7f9; margin: 0; padding: 20px; color: #111; }
-    .card { max-width: 760px; margin: 0 auto 16px auto; background: white; border-radius: 14px; padding: 18px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
-    h1 { margin-top: 0; font-size: 26px; }
-    input, button { font-size: 16px; padding: 11px; border-radius: 10px; border: 1px solid #ccc; }
-    input { width: 100%; box-sizing: border-box; margin: 8px 0 12px 0; }
-    button { cursor: pointer; background: #111; color: white; border: none; width: 100%; }
-    .signal { font-size: 42px; font-weight: bold; text-align: center; padding: 20px; border-radius: 14px; margin: 12px 0; }
-    .buy { background: #d9f8df; color: #087a22; }
-    .wait { background: #fff2cc; color: #8a6500; }
-    .sell { background: #ffd9d9; color: #b00020; }
-    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .box { background: #f2f4f7; padding: 12px; border-radius: 12px; }
-    .label { color: #666; font-size: 13px; }
-    .value { font-size: 22px; font-weight: bold; margin-top: 4px; }
-    .small { color: #555; font-size: 14px; line-height: 1.45; }
-    ul { line-height: 1.5; }
+    body { font-family: system-ui, sans-serif; }
+    .card { background: white; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); }
   </style>
 </head>
-<body>
-  <div class="card">
-    <h1>SOXL Daily Signal App</h1>
-    <p class="small">Paste your Finnhub API key, then tap “Check Signal.” This app calculates EMA 9, SMA 50, and RSI 14 from daily candles.</p>
+<body class="bg-gray-100 min-h-screen py-8">
+  <div class="max-w-lg mx-auto px-4">
+    <div class="card rounded-3xl p-8">
+      <h1 class="text-3xl font-bold text-center mb-2">SOXL Daily Signal</h1>
+      <p class="text-center text-gray-600 mb-8">EMA 9 • SMA 50 • RSI 14</p>
 
-    <label>Finnhub API Key</label>
-    <input id="apiKey" type="password" placeholder="Paste your Finnhub API key here" />
+      <div class="space-y-6">
+        <!-- API Key -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Finnhub API Key</label>
+          <input id="apiKey" type="password" 
+                 class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                 placeholder="Paste your Finnhub key here">
+        </div>
 
-    <label>Symbol</label>
-    <input id="symbol" value="SOXL" />
+        <!-- Symbol -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Symbol</label>
+          <input id="symbol" type="text" value="SOXL"
+                 class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-center font-mono text-lg">
+        </div>
 
-    <button onclick="checkSignal()">Check Signal</button>
-  </div>
-
-  <div class="card">
-    <div id="signalBox" class="signal wait">READY</div>
-
-    <div class="grid">
-      <div class="box">
-        <div class="label">Last Price</div>
-        <div id="price" class="value">--</div>
+        <button onclick="checkSignal()" 
+                class="w-full bg-black hover:bg-gray-800 text-white font-semibold py-4 rounded-2xl transition">
+          Check Signal
+        </button>
       </div>
-      <div class="box">
-        <div class="label">RSI 14</div>
-        <div id="rsi" class="value">--</div>
-      </div>
-      <div class="box">
-        <div class="label">EMA 9</div>
-        <div id="ema9" class="value">--</div>
-      </div>
-      <div class="box">
-        <div class="label">SMA 50</div>
-        <div id="sma50" class="value">--</div>
+
+      <!-- Results -->
+      <div id="results" class="mt-8 hidden">
+        <div id="error" class="hidden bg-red-100 text-red-700 p-4 rounded-2xl text-center font-medium"></div>
+
+        <div class="grid grid-cols-2 gap-4 mt-6">
+          <div class="bg-gray-50 p-4 rounded-2xl text-center">
+            <p class="text-xs text-gray-500">Last Price</p>
+            <p id="price" class="text-3xl font-bold text-gray-900 mt-1">--</p>
+          </div>
+          <div class="bg-gray-50 p-4 rounded-2xl text-center">
+            <p class="text-xs text-gray-500">RSI 14</p>
+            <p id="rsi" class="text-3xl font-bold mt-1">--</p>
+          </div>
+          <div class="bg-gray-50 p-4 rounded-2xl text-center">
+            <p class="text-xs text-gray-500">EMA 9</p>
+            <p id="ema" class="text-3xl font-bold mt-1">--</p>
+          </div>
+          <div class="bg-gray-50 p-4 rounded-2xl text-center">
+            <p class="text-xs text-gray-500">SMA 50</p>
+            <p id="sma" class="text-3xl font-bold mt-1">--</p>
+          </div>
+        </div>
+
+        <div id="signal" class="mt-8 text-center p-6 rounded-3xl text-4xl font-bold"></div>
+
+        <div id="reason" class="mt-4 text-sm text-gray-600 text-center"></div>
       </div>
     </div>
 
-    <h3>Reason</h3>
-    <p id="reason" class="small">Tap the button to calculate today’s signal.</p>
+    <p class="text-center text-xs text-gray-500 mt-8">
+      Built as a replacement for the broken GitHub Pages app • Data from Finnhub.io
+    </p>
   </div>
 
-  <div class="card small">
-    <h3>Signal Rules</h3>
-    <ul>
-      <li><b>BUY:</b> Price above SMA 50, near EMA 9, RSI 45–65, and bouncing.</li>
-      <li><b>WAIT:</b> Trend okay but price extended, RSI too high, or setup not clean.</li>
-      <li><b>SELL:</b> Price below EMA 9 with weakness, RSI <40, or below SMA 50.</li>
-    </ul>
-    <p><b>Important:</b> SOXL is a 3x leveraged ETF. Use small positions and never buy all at once.</p>
-  </div>
+  <script>
+    async function checkSignal() {
+      const apiKey = document.getElementById('apiKey').value.trim();
+      const symbol = document.getElementById('symbol').value.trim().toUpperCase();
 
-<script>
-function sma(values, period) {
-  if (values.length < period) return null;
-  const slice = values.slice(-period);
-  return slice.reduce((a, b) => a + b, 0) / period;
-}
+      const results = document.getElementById('results');
+      const errorDiv = document.getElementById('error');
+      results.classList.remove('hidden');
+      errorDiv.classList.add('hidden');
 
-function ema(values, period) {
-  if (values.length < period) return null;
-  const k = 2 / (period + 1);
-  let emaValue = values.slice(0, period).reduce((a, b) => a + b, 0) / period;
-  for (let i = period; i < values.length; i++) {
-    emaValue = values[i] * k + emaValue * (1 - k);
-  }
-  return emaValue;
-}
+      if (!apiKey) {
+        showError("Please paste your Finnhub API key");
+        return;
+      }
+      if (!symbol) {
+        showError("Please enter a symbol");
+        return;
+      }
 
-function rsi(values, period = 14) {
-  if (values.length <= period) return null;
-  let gains = 0, losses = 0;
-  for (let i = values.length - period; i < values.length; i++) {
-    const diff = values[i] - values[i - 1];
-    if (diff >= 0) gains += diff;
-    else losses -= diff;
-  }
-  const avgGain = gains / period;
-  const avgLoss = losses / period;
-  if (avgLoss === 0) return 100;
-  const rs = avgGain / avgLoss;
-  return 100 - (100 / (1 + rs));
-}
+      try {
+        // Fetch daily candles (last 100 days should be enough for SMA 50 + RSI)
+        const url = `https://finnhub.io/api/v1/stock/candle?symbol=${symbol}&resolution=D&from=${Math.floor(Date.now()/1000)-7776000}&to=${Math.floor(Date.now()/1000)}&token=${apiKey}`;
+        
+        const res = await fetch(url);
+        const data = await res.json();
 
-function pct(a, b) {
-  return ((a - b) / b) * 100;
-}
+        if (data.s !== "ok" || !data.c || data.c.length < 50) {
+          throw new Error(data.error || "Not enough data or invalid symbol");
+        }
 
-async function checkSignal() {
-  const key = document.getElementById("apiKey").value.trim();
-  const symbol = document.getElementById("symbol").value.trim().toUpperCase();
+        const closes = data.c;
+        const currentPrice = closes[closes.length - 1];
 
-  if (!key) {
-    alert("Please paste your Finnhub API key first.");
-    return;
-  }
+        // EMA 9
+        const ema9 = calculateEMA(closes, 9);
 
-  const url = `https://finnhub.io/api/v1/stock/candle?symbol=${symbol}&resolution=D&count=500&token=${key}`;
+        // SMA 50
+        const sma50 = calculateSMA(closes, 50);
 
-  const signalBox = document.getElementById("signalBox");
-  signalBox.className = "signal wait";
-  signalBox.textContent = "CHECKING...";
+        // RSI 14
+        const rsi14 = calculateRSI(closes, 14);
 
-  try {
-    const res = await fetch(url);
-    if (!res.ok) {
-      throw new Error(`HTTP error! Status: ${res.status}`);
-    }
-    const data = await res.json();
+        // Display values
+        document.getElementById('price').textContent = currentPrice.toFixed(2);
+        document.getElementById('ema').textContent = ema9.toFixed(2);
+        document.getElementById('sma').textContent = sma50.toFixed(2);
+        document.getElementById('rsi').textContent = rsi14.toFixed(1);
 
-    if (data.s === "no_data" || !data.c || data.c.length === 0) {
-      throw new Error("No data returned. Check symbol, API key, or try again later (markets may be closed).");
-    }
-    if (data.s !== "ok") {
-      throw new Error("API error: " + (data.error || "Unknown issue"));
-    }
+        // Simple signal logic
+        let signalText = "NEUTRAL";
+        let signalColor = "bg-gray-200 text-gray-700";
 
-    if (data.c.length < 100) {
-      throw new Error("Not enough historical data.");
-    }
+        const priceAboveEMA = currentPrice > ema9;
+        const emaAboveSMA = ema9 > sma50;
+        const rsiOversold = rsi14 < 30;
+        const rsiOverbought = rsi14 > 70;
 
-    const closes = data.c;
-    const last = closes[closes.length - 1];
-    const prev = closes[closes.length - 2] || last;
-    const e9 = ema(closes, 9);
-    const s50 = sma(closes, 50);
-    const r = rsi(closes, 14);
+        if (priceAboveEMA && emaAboveSMA && rsi14 < 70) {
+          signalText = "BUY";
+          signalColor = "bg-green-500 text-white";
+        } else if (!priceAboveEMA && !emaAboveSMA && rsi14 > 30) {
+          signalText = "SELL";
+          signalColor = "bg-red-500 text-white";
+        }
 
-    if (e9 === null || s50 === null || r === null) {
-      throw new Error("Could not calculate indicators.");
+        const signalDiv = document.getElementById('signal');
+        signalDiv.textContent = signalText;
+        signalDiv.className = `mt-8 text-center p-6 rounded-3xl text-4xl font-bold ${signalColor}`;
+
+        document.getElementById('reason').innerHTML = `
+          Price: ${priceAboveEMA ? 'Above' : 'Below'} EMA9<br>
+          EMA9: ${emaAboveSMA ? 'Above' : 'Below'} SMA50<br>
+          RSI: ${rsi14.toFixed(1)} ${rsiOversold ? '(Oversold)' : rsiOverbought ? '(Overbought)' : ''}
+        `;
+
+      } catch (err) {
+        showError(err.message || "Failed to fetch data. Check your API key and symbol.");
+      }
     }
 
-    document.getElementById("price").textContent = "$" + last.toFixed(2);
-    document.getElementById("ema9").textContent = "$" + e9.toFixed(2);
-    document.getElementById("sma50").textContent = "$" + s50.toFixed(2);
-    document.getElementById("rsi").textContent = r.toFixed(1);
-
-    const aboveSMA = last > s50;
-    const nearEMA = Math.abs(pct(last, e9)) <= 3;
-    const bouncing = last > prev && last >= e9 - 0.5;
-    const rsiGood = r >= 45 && r <= 65;
-    const rsiWeak = r < 40;
-    const belowEMA = last < e9;
-    const belowSMA = last < s50;
-    const extended = pct(last, e9) > 5;
-
-    let signal = "WAIT";
-    let cls = "wait";
-    let reason = "";
-
-    if (belowSMA || (belowEMA && rsiWeak)) {
-      signal = "SELL";
-      cls = "sell";
-      reason = "Price is weak: below SMA 50 or below EMA 9 with low RSI.";
-    } else if (aboveSMA && nearEMA && bouncing && rsiGood) {
-      signal = "BUY";
-      cls = "buy";
-      reason = "Strong setup: above SMA 50, near EMA 9, healthy RSI, and bouncing.";
-    } else {
-      signal = "WAIT";
-      cls = "wait";
-      if (!aboveSMA) reason = "Price not above SMA 50 → trend not confirmed.";
-      else if (extended) reason = "Price extended above EMA 9. Wait for pullback.";
-      else if (!rsiGood) reason = "RSI outside ideal 45–65 range.";
-      else if (!bouncing) reason = "No clear bounce yet.";
-      else reason = "Setup not fully aligned. Safer to wait.";
+    function showError(msg) {
+      const errorDiv = document.getElementById('error');
+      errorDiv.textContent = msg;
+      errorDiv.classList.remove('hidden');
     }
 
-    signalBox.className = "signal " + cls;
-    signalBox.textContent = signal;
-    document.getElementById("reason").textContent = reason;
+    // Helper functions
+    function calculateSMA(closes, period) {
+      const slice = closes.slice(-period);
+      return slice.reduce((a, b) => a + b, 0) / period;
+    }
 
-  } catch (err) {
-    signalBox.className = "signal sell";
-    signalBox.textContent = "ERROR";
-    document.getElementById("reason").textContent = err.message;
-    console.error(err);
-  }
-}
-</script>
+    function calculateEMA(closes, period) {
+      let ema = closes[0];
+      const multiplier = 2 / (period + 1);
+      for (let i = 1; i < closes.length; i++) {
+        ema = (closes[i] * multiplier) + (ema * (1 - multiplier));
+      }
+      return ema;
+    }
+
+    function calculateRSI(closes, period) {
+      let gains = 0, losses = 0;
+      for (let i = closes.length - period; i < closes.length; i++) {
+        const change = closes[i] - closes[i-1];
+        if (change > 0) gains += change;
+        else losses -= change;
+      }
+      const avgGain = gains / period;
+      const avgLoss = losses / period;
+      if (avgLoss === 0) return 100;
+      const rs = avgGain / avgLoss;
+      return 100 - (100 / (1 + rs));
+    }
+  </script>
 </body>
 </html>
