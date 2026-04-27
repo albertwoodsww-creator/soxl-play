@@ -26,7 +26,7 @@
 <body>
   <div class="card">
     <h1>SOXL Daily Signal App</h1>
-    <p class="small">Paste your Finnhub API key, then click “Check Signal.” This app calculates EMA 9, SMA 50, and RSI 14 from daily candles.</p>
+    <p class="small">Paste your Finnhub API key, then tap “Check Signal.” This app calculates EMA 9, SMA 50, and RSI 14 from daily candles.</p>
 
     <label>Finnhub API Key</label>
     <input id="apiKey" type="password" placeholder="Paste your Finnhub API key here" />
@@ -60,15 +60,15 @@
     </div>
 
     <h3>Reason</h3>
-    <p id="reason" class="small">Click the button to calculate today’s signal.</p>
+    <p id="reason" class="small">Tap the button to calculate today’s signal.</p>
   </div>
 
   <div class="card small">
     <h3>Signal Rules</h3>
     <ul>
-      <li><b>BUY:</b> Price is above SMA 50, close to EMA 9, RSI is 45–65, and price is bouncing.</li>
-      <li><b>WAIT:</b> Trend is okay but price is extended, RSI is too high, or setup is not clean.</li>
-      <li><b>SELL:</b> Price breaks below EMA 9 with weakness, RSI drops below 40, or price falls below SMA 50.</li>
+      <li><b>BUY:</b> Price above SMA 50, near EMA 9, RSI 45–65, and bouncing.</li>
+      <li><b>WAIT:</b> Trend okay but price extended, RSI too high, or setup not clean.</li>
+      <li><b>SELL:</b> Price below EMA 9 with weakness, RSI <40, or below SMA 50.</li>
     </ul>
     <p><b>Important:</b> SOXL is a 3x leveraged ETF. Use small positions and never buy all at once.</p>
   </div>
@@ -76,14 +76,14 @@
 <script>
 function sma(values, period) {
   if (values.length < period) return null;
-  const slice = values.slice(values.length - period);
-  return slice.reduce((a,b) => a+b, 0) / period;
+  const slice = values.slice(-period);
+  return slice.reduce((a, b) => a + b, 0) / period;
 }
 
 function ema(values, period) {
   if (values.length < period) return null;
   const k = 2 / (period + 1);
-  let emaValue = values.slice(0, period).reduce((a,b) => a+b, 0) / period;
+  let emaValue = values.slice(0, period).reduce((a, b) => a + b, 0) / period;
   for (let i = period; i < values.length; i++) {
     emaValue = values[i] * k + emaValue * (1 - k);
   }
@@ -118,27 +118,40 @@ async function checkSignal() {
     return;
   }
 
-  const now = Math.floor(Date.now() / 1000);
-  const oneYearAgo = now - 365 * 24 * 60 * 60;
-  const url = `https://finnhub.io/api/v1/stock/candle?symbol=${symbol}&resolution=D&from=${oneYearAgo}&to=${now}&token=${key}`;
+  const url = `https://finnhub.io/api/v1/stock/candle?symbol=${symbol}&resolution=D&count=500&token=${key}`;
 
-  document.getElementById("signalBox").className = "signal wait";
-  document.getElementById("signalBox").textContent = "CHECKING...";
+  const signalBox = document.getElementById("signalBox");
+  signalBox.className = "signal wait";
+  signalBox.textContent = "CHECKING...";
 
   try {
     const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error(`HTTP error! Status: ${res.status}`);
+    }
     const data = await res.json();
 
-    if (data.s !== "ok" || !data.c || data.c.length < 60) {
-      throw new Error("No enough price data. Please check symbol or API key.");
+    if (data.s === "no_data" || !data.c || data.c.length === 0) {
+      throw new Error("No data returned. Check symbol, API key, or try again later (markets may be closed).");
+    }
+    if (data.s !== "ok") {
+      throw new Error("API error: " + (data.error || "Unknown issue"));
+    }
+
+    if (data.c.length < 100) {
+      throw new Error("Not enough historical data.");
     }
 
     const closes = data.c;
     const last = closes[closes.length - 1];
-    const prev = closes[closes.length - 2];
+    const prev = closes[closes.length - 2] || last;
     const e9 = ema(closes, 9);
     const s50 = sma(closes, 50);
     const r = rsi(closes, 14);
+
+    if (e9 === null || s50 === null || r === null) {
+      throw new Error("Could not calculate indicators.");
+    }
 
     document.getElementById("price").textContent = "$" + last.toFixed(2);
     document.getElementById("ema9").textContent = "$" + e9.toFixed(2);
@@ -146,13 +159,13 @@ async function checkSignal() {
     document.getElementById("rsi").textContent = r.toFixed(1);
 
     const aboveSMA = last > s50;
-    const nearEMA = Math.abs(pct(last, e9)) <= 2.5;
-    const bouncing = last > prev && last >= e9;
+    const nearEMA = Math.abs(pct(last, e9)) <= 3;
+    const bouncing = last > prev && last >= e9 - 0.5;
     const rsiGood = r >= 45 && r <= 65;
     const rsiWeak = r < 40;
     const belowEMA = last < e9;
     const belowSMA = last < s50;
-    const extended = pct(last, e9) > 4;
+    const extended = pct(last, e9) > 5;
 
     let signal = "WAIT";
     let cls = "wait";
@@ -161,30 +174,30 @@ async function checkSignal() {
     if (belowSMA || (belowEMA && rsiWeak)) {
       signal = "SELL";
       cls = "sell";
-      reason = "Price is weak: it is below SMA 50 or below EMA 9 with RSI under 40. Protect capital first.";
+      reason = "Price is weak: below SMA 50 or below EMA 9 with low RSI.";
     } else if (aboveSMA && nearEMA && bouncing && rsiGood) {
       signal = "BUY";
       cls = "buy";
-      reason = "Good setup: price is above SMA 50, near EMA 9, RSI is healthy, and price is bouncing.";
+      reason = "Strong setup: above SMA 50, near EMA 9, healthy RSI, and bouncing.";
     } else {
       signal = "WAIT";
       cls = "wait";
-      if (!aboveSMA) reason = "Price is not above SMA 50. Trend is not strong enough.";
-      else if (extended) reason = "Price is too far above EMA 9. Do not chase; wait for pullback.";
-      else if (!rsiGood) reason = "RSI is outside the best entry zone of 45–65.";
-      else if (!bouncing) reason = "No clear bounce yet. Wait for confirmation.";
-      else reason = "Setup is not clean enough. Waiting is safer.";
+      if (!aboveSMA) reason = "Price not above SMA 50 → trend not confirmed.";
+      else if (extended) reason = "Price extended above EMA 9. Wait for pullback.";
+      else if (!rsiGood) reason = "RSI outside ideal 45–65 range.";
+      else if (!bouncing) reason = "No clear bounce yet.";
+      else reason = "Setup not fully aligned. Safer to wait.";
     }
 
-    const box = document.getElementById("signalBox");
-    box.className = "signal " + cls;
-    box.textContent = signal;
+    signalBox.className = "signal " + cls;
+    signalBox.textContent = signal;
     document.getElementById("reason").textContent = reason;
 
   } catch (err) {
-    document.getElementById("signalBox").className = "signal sell";
-    document.getElementById("signalBox").textContent = "ERROR";
+    signalBox.className = "signal sell";
+    signalBox.textContent = "ERROR";
     document.getElementById("reason").textContent = err.message;
+    console.error(err);
   }
 }
 </script>
